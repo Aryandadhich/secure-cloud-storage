@@ -1,0 +1,21 @@
+//auth controller.js 
+This file contain 2 function 
+
+1 registeruser - handel user signup 
+2 login user - handel user login
+
+1 register user ->
+
+//type module 
+import user from "../models/user.js"
+import {genratedtoken} from "..utils/generatetoken.js";
+
+//type commonjs
+const user = require("../models/user.js")
+const {genratedtoken} = require ("..utils/generatetoken.js");
+
+const registeruser = async (req,res){
+    try{
+        const {name,email,pass,role} = req.body;
+    }
+}
