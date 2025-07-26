@@ -1,5 +1,3 @@
-# secure-cloud-storage
-
 # Secure Cloud Storage API
 
 A **production-grade backend project** built with Node.js and Express, featuring:
