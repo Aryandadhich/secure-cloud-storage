@@ -5,6 +5,11 @@ import {generateAccessToken, generateRefreshToken} from '../utils/generateToken.
 export const registerUser = async(req:Request,res:Response): Promise<void> => {
     try{
         const {name,email,password} = req.body;
+
+        //validation
+        if(!name||!email||!password){
+            res.status(400).json({message:"All fields are required"});
+        }
     }
 catch(err){
     console.log("error",err)
