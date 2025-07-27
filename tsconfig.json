@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     /* Language & Environment */
-    "target": "ES2020",            // Use modern JavaScript features for compiled output
-    "module": "ESNext",            // Use ES module system (import/export) instead of CommonJS
+    "target": "es2016",            // Use modern JavaScript features for compiled output
+    "module": "CommonJS",            // Use ES module system (import/export) instead of CommonJS
     "moduleResolution": "node",    // Resolve modules like Node.js does (important for Express, etc.)
 
     /* Project Structure */

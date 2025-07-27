@@ -29,7 +29,7 @@ userSchema.pre<IUser>("save",async function(next){
 })
 
 //password check method
-userSchema.methods.matchPassword = async function (enteredPassword){
+userSchema.methods.matchPassword = async function (enteredPassword: string) : Promise<boolean>{
     return await bcrypt.compare(enteredPassword, this.Password);
 };
 
