@@ -1,13 +1,13 @@
-import user from '../models/user.js'
-import bcrypt from 'bcryptjs';
-
+import {Request, Response} from "express";
+import User from "../models/user"
 import {generateAccessToken, generateRefreshToken} from '../utils/generateToken.js';
 
-export const register = async(req,res,next) => {
+export const registerUser = async(req:Request,res:Response): Promise<void> => {
     try{
-        const {name,email,pass} = req.body;
+        const {name,email,password} = req.body;
     }
-
+catch(err){
+    console.log("error",err)
+}
     //validate input
-    if
 }
