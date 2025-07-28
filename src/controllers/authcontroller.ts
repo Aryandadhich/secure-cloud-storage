@@ -19,7 +19,7 @@ export const registerUser = async(req:Request,res:Response): Promise<void> => {
             return;
         }
 
-        // Create New User 
+        // Create New User (paas is alredy hashed in model pre save hook)
         const user = await User.create({
             name,email,password,
         });
