@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import User from "../models/user" //user model to interect with mongodb
-import {generateAccessToken, generateRefreshToken} from '../utils/generateToken.js';
+import {generateAccessToken, generateRefreshToken} from '../utils/generateToken';
 
 export const registerUser = async(req:Request,res:Response): Promise<void> => {
     try{
@@ -25,8 +25,8 @@ export const registerUser = async(req:Request,res:Response): Promise<void> => {
         });
 
         //Generate Token 
-        const accessToken = generateAccessToken(User._id.toString());
-        const RefreshToken = generateRefreshToken(User._id.toString());
+        const accessToken = generateAccessToken(user.id);
+        const RefreshToken = generateRefreshToken(user.id);
 
         //Set refresh token in HTTP-only Cookie
         res.cookie("refreshtoken",RefreshToken,{
@@ -46,8 +46,7 @@ export const registerUser = async(req:Request,res:Response): Promise<void> => {
                 role: user.role,
             },
             accessToken,
-            RefreshToken,
-        })
+        });
     }
 catch(error : any ){
     console.log("Register error",error);
