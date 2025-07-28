@@ -52,5 +52,31 @@ catch(error : any ){
     console.log("Register error",error);
     res.status(500).json({message: "Internal server error"})
 }
-    //validate input
+}
+//login
+
+  export const loginUser = async (req: Request, res:Response) : Promise<void> => {
+     try{
+        const {email,password} = req.body;
+
+        //validate input
+        if(!email || !password) {
+            res.status(400).json({message: "Email and password are required"});
+            return;
+        }
+
+        //check if user exist
+        const ExistingUser = await User.findOne({email})
+         if(!ExistingUser){
+            res.status(401).json({message:"invalid credentials"})
+            return;
+         }
+
+         //check password using matchpassword method from schema
+         const isMatch = await User.matchPassword(password);
+         if(!isMatch){
+            res.status(401).json({message:"invalid passwords"});
+            return;
+         }
+     }
 }
