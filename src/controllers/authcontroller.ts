@@ -73,10 +73,38 @@ catch(error : any ){
          }
 
          //check password using matchpassword method from schema
-         const isMatch = await User.matchPassword(password);
+         const isMatch = await  ExistingUser.matchPassword(password);
          if(!isMatch){
             res.status(401).json({message:"invalid passwords"});
             return;
          }
+
+         //Generate Token
+         const accessToken = generateAccessToken(ExistingUser.id);
+         const refreshToken = generateRefreshToken(ExistingUser.id)
+
+         //set Refresh Token in cookie
+         res.cookie("refreshToken",refreshToken, {
+            httpOnly : true,
+            secure : process.env.NODE_ENV === " Production",
+            sameSite : "strict",
+            maxAge : 7*24*60*60*1000
+         })
+
+         //return user data and token
+         res.status(200).json({
+            message:"Login Successful",
+            user:{
+                id: ExistingUser.id,
+                name: ExistingUser.name,
+                email: ExistingUser.email,
+                role: ExistingUser.role
+            },
+            accessToken,
+         });
+     }
+     catch(error: any){
+        console.error("Login error", error);
+        res.status(500).json({message:"Internal server error"});
      }
 }
