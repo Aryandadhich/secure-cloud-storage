@@ -28,6 +28,15 @@ export const registerUser = async(req:Request,res:Response): Promise<void> => {
         const accessToken = generateAccessToken(user.id);
         const RefreshToken = generateRefreshToken(user.id);
 
+
+        //set access token in cookie
+         res.cookie("accessToken", accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 15 * 60 * 1000 // 15 minutes
+        });
+
         //Set refresh token in HTTP-only Cookie
         res.cookie("refreshtoken",RefreshToken,{
             httpOnly: true,
@@ -66,7 +75,7 @@ catch(error : any ){
         }
 
         //check if user exist
-        const ExistingUser = await User.findOne({email})
+        const ExistingUser = await User.findOne({email}).select('+password');
          if(!ExistingUser){
             res.status(401).json({message:"invalid credentials"})
             return;
@@ -83,10 +92,18 @@ catch(error : any ){
          const accessToken = generateAccessToken(ExistingUser.id);
          const refreshToken = generateRefreshToken(ExistingUser.id)
 
+        //set access token in cookie
+         res.cookie("accessToken", accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 15 * 60 * 1000 // 15 minutes
+        });
+
          //set Refresh Token in cookie
          res.cookie("refreshToken",refreshToken, {
             httpOnly : true,
-            secure : process.env.NODE_ENV === " Production",
+            secure : process.env.NODE_ENV === "production",
             sameSite : "strict",
             maxAge : 7*24*60*60*1000
          })
@@ -108,3 +125,21 @@ catch(error : any ){
         res.status(500).json({message:"Internal server error"});
      }
 }
+
+//protected route for (/profile or /me)
+//we use protect middleware to allow only logged in user to access this route
+export const getProfile = async(req: Request,res: Response)=>{
+    try{
+        //req.user set by protected middleware
+        const user = (req as any).user;
+
+        res.status(200).json({
+            id : user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        });
+    }catch(error){
+        res.status(500).json({message: " failed to fetch profile"})
+    }
+};

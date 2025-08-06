@@ -4,7 +4,6 @@ import express from 'express';
 import connectDB from './config/db'
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
-import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes";
 
 //load enviroment variables

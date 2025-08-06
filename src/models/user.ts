@@ -13,7 +13,7 @@ export interface IUser extends Document{
 const userSchema = new Schema<IUser> ({
     name :{type: String, required:true},
     email:{type:String, required:true, unique:true},
-    password:{type: String, required: true},
+    password:{type: String, required: true, select: false},
     role: {type: String, enum:["user", "admin"], default : "user"}
 });
 
@@ -30,7 +30,7 @@ userSchema.pre<IUser>("save",async function(next){
 
 //password check method
 userSchema.methods.matchPassword = async function (enteredPassword: string) : Promise<boolean>{
-    return await bcrypt.compare(enteredPassword, this.Password);
+    return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model<IUser>("user", userSchema);

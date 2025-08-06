@@ -4,6 +4,7 @@
 
 import {Request, Response, NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
+import User from "../models/user";
 
 //extending default request type from express.
 //why ?  because we are adding a new property  (user) to req.
@@ -26,9 +27,13 @@ const protect = async (req:AuthRequest, res: Response, next: NextFunction) => {
         //verify token from .env file
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
 
-        //attach user info to request object
-        req.user = decoded;
+        // fetch user from DB using ID from token
+      const user = await User.findById((decoded as any).id).select("-password");
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
 
+      req.user = user; //attach full user to request
         next(); //continue to actual route
     }catch(error){ 
         return res.status(401).json({message:"not autorised invalid token"});
