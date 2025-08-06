@@ -3,18 +3,26 @@
 import express from 'express';
 import connectDB from './config/db'
 import dotenv from 'dotenv';
+import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
+import authRoutes from "./routes/authRoutes";
 
 //load enviroment variables
-dotenv.config();
+dotenv.config(); //load variable from .env file 
 
 //connect to mongo
 connectDB();
 
 //initialize express
 const app = express();
-app.use(express.json());
+app.use(express.json()); //parse incoming json
+app.use(cookieParser()); //helps your app read cookies sent by browser - middleware to parse cookies
 
-app.get('/',(req,res)=>{
+//Routes 
+app.use('/api/auth',authRoutes);
+
+//health check route(Optional)
+app.get('/',(_req,res)=>{
     res.send("API is running");
 })
 
