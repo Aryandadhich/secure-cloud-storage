@@ -1,16 +1,61 @@
 import {Request, Response} from "express";
 import User from "../models/user" //user model to interect with mongodb
 import {generateAccessToken, generateRefreshToken} from '../utils/generateToken';
+import validator from 'validator';
 
-export const registerUser = async(req:Request,res:Response): Promise<void> => {
+
+// Register
+
+export const registerUser = async(req:Request,res:Response) => {
     try{
-        const {name,email,password} = req.body;
-
         //validation
+        //normalize and trim input
+        const rawName = (req.body.name ?? "").toString(); //force it to string so we dont get erors
+        const rawEmail = (req.body.email ?? "").toString();
+        const rawPassword = (req.body.password ?? "").toString();
+
+        const name = rawName.trim(); //remove leading/trailing space from name 
+        
+        //normalize email to a consistant format (ex - lowecase domain , emove dots in Gmail)
+        const email = (validator.normalizeEmail(rawEmail) || rawEmail).trim().toLowerCase();
+
+
+        const password = rawPassword.trim();  //remove space from password
+        
+        //basic presence
         if(!name||!email||!password){
             res.status(400).json({message:"All fields are required"});
             return;
         }
+        if (!/^[a-zA-Z\s]{3,50}$/.test(name)) {
+  return res.status(400).json({ message: "Name must be 3-50 characters and contain only letters" });
+}
+
+         if (name.length > 100) {
+               return res.status(400).json({ message: "name too long (max 100 chars)" });
+    }
+    if (email.length > 254) {
+       return res.status(400).json({ message: "email too long" });
+    }
+
+    // validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "invalid email format" });
+    }
+
+    // password strength (configurable)
+    const passwordOptions = {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 0, // set to 1 if you want stricter
+      minNumbers: 1,
+      minSymbols: 0,   // set to 1 for stricter
+    };
+    if (!validator.isStrongPassword(password, passwordOptions)) {
+        return res.status(400).json({
+        message: "password too weak (min 8 chars, include numbers)",
+      });
+    }
         
         //check if user is alredy exist
         const UserExists = await User.findOne ({email});
@@ -54,11 +99,15 @@ export const registerUser = async(req:Request,res:Response): Promise<void> => {
                 email: user.email,
                 role: user.role,
             },
-            accessToken,
         });
     }
 catch(error : any ){
     console.log("Register error",error);
+
+    //duplicate key (race) - 
+    if(error.code === 11000 && error.keyPattern?.email){
+        return res.status(400).json({message: "Email alredy in use"});
+    }
     res.status(500).json({message: "Internal server error"})
 }
 }
