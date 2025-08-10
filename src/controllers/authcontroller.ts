@@ -176,6 +176,7 @@ catch(error : any ){
 }
 
 //protected route for (/profile or /me)
+//this is not rbac its authentication based access - only logged in user can access
 //we use protect middleware to allow only logged in user to access this route
 export const getProfile = async(req: Request,res: Response)=>{
     try{
