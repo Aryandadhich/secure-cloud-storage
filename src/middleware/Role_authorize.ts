@@ -17,7 +17,7 @@ export const roleAuthorize = (allowedRoles: string[]) => {
       try{
         //check first if jwt middleware added req.user
         if(!req.user){
-          return res.send(401).json({
+          return res.status(401).json({
             success : false,
             message : "unauthorised: No user info"
           });
