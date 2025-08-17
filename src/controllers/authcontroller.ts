@@ -193,3 +193,25 @@ export const getProfile = async(req: Request,res: Response)=>{
         res.status(500).json({message: " failed to fetch profile"})
     }
 };
+
+//logout 
+
+export const logoutuser = async(req: Request, res: Response) => {
+    try{
+        const  cookieOption = {
+            httpOnly :true,
+            secure: process.env.NODE_ENV === "production ",
+            samesite : "strict",
+            path:'/' //must match cookie path when it was set 
+        }
+        //clear cookies
+        res.clearCookie("accessToken",cookieOption);
+        res.clearCookie("refreshToken",cookieOption);
+
+        return res.status(200).json({message : "logout successfully"});
+    }
+    catch(err){
+        console.error("Logout error",err);
+        return res.status(500).json({message : "Failed to logout"});
+    }
+}
