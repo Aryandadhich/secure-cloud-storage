@@ -71,7 +71,7 @@ export const registerUser = async(req:Request,res:Response) => {
 
         //Generate Token 
         const accessToken = generateAccessToken(user.id);
-        const RefreshToken = generateRefreshToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
 
 
         //set access token in cookie
@@ -83,7 +83,7 @@ export const registerUser = async(req:Request,res:Response) => {
         });
 
         //Set refresh token in HTTP-only Cookie
-        res.cookie("refreshtoken",RefreshToken,{
+        res.cookie("refreshtoken",refreshToken,{
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite : "strict", //protect against cross site requests
