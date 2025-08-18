@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import User from "../models/user" //user model to interect with mongodb
 import {generateAccessToken, generateRefreshToken} from '../utils/generateToken';
 import validator from 'validator';
+import {setAuthCookies} from '../utils/cookies';
 
 
 // Register
@@ -75,20 +76,8 @@ export const registerUser = async(req:Request,res:Response) => {
 
 
         //set access token in cookie
-         res.cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000 // 15 minutes
-        });
-
         //Set refresh token in HTTP-only Cookie
-        res.cookie("refreshToken",refreshToken,{
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite : "strict", //protect against cross site requests
-            maxAge : 7*24*60*60*1000 //7 days
-        });
+        setAuthCookies(res,accessToken,refreshToken);
 
         //Return user data & token
         res.status(201).json({
@@ -141,21 +130,7 @@ catch(error : any ){
          const accessToken = generateAccessToken(ExistingUser.id);
          const refreshToken = generateRefreshToken(ExistingUser.id)
 
-        //set access token in cookie
-         res.cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000 // 15 minutes
-        });
-
-         //set Refresh Token in cookie
-         res.cookie("refreshToken",refreshToken, {
-            httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite : "strict",
-            maxAge : 7*24*60*60*1000
-         })
+        setAuthCookies(res,accessToken,refreshToken)
 
          //return user data and token
          res.status(200).json({
