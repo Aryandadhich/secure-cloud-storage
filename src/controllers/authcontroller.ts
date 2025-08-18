@@ -83,7 +83,7 @@ export const registerUser = async(req:Request,res:Response) => {
         });
 
         //Set refresh token in HTTP-only Cookie
-        res.cookie("refreshtoken",refreshToken,{
+        res.cookie("refreshToken",refreshToken,{
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite : "strict", //protect against cross site requests
