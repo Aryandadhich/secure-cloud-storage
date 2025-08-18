@@ -6,7 +6,7 @@ export interface IUser extends Document{
    name : string;
    email : string;
    password : string;
-   role : "user"  | "admin";
+   role : "user"  | "admin" | "superadmin";
    matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
@@ -32,6 +32,16 @@ userSchema.pre<IUser>("save",async function(next){
 userSchema.methods.matchPassword = async function (enteredPassword: string) : Promise<boolean>{
     return await bcrypt.compare(enteredPassword, this.password);
 };
+
+//setRefreshtoken method
+//when a user login we generate a new refreshtoken
+//insted of saying it as-is, we hash it -> store in hash
+//thats why if db leaks attakers just cant use refresh token
+userSchema.methods.serRefreshToken = function (token : string){
+    const crypto = require("crypto");
+    const hash = crypto.createHash("sha256").update(token).digest("hex");
+    this.refreshToken = hash;
+}
 
 const User = mongoose.model<IUser>("user", userSchema);
 export default User;

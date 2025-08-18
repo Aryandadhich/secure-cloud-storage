@@ -94,7 +94,7 @@ export const registerUser = async(req:Request,res:Response) => {
  *    -> user.matchesRefreshToken(refreshToken) // compares via hash
  *    -> user.clearRefreshToken()
  */
-
+        //above comment for this 1 line only 
         setAuthCookies(res,accessToken,refreshToken);
 
         //Return user data & token
