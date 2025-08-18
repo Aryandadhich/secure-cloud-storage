@@ -74,9 +74,27 @@ export const registerUser = async(req:Request,res:Response) => {
         const accessToken = generateAccessToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
 
+        /**
+ * Auth Controller
+ * ----------------
+ * - We issue two JWTs:
+ *    1) accessToken  → short-lived (15m) for every API call
+ *    2) refreshToken → long-lived (7d) to mint new access tokens
+ *
+ * - Cookies:
+ *    We DO NOT set cookies inline here. Instead we use /src/utils/cookies.ts
+ *    to keep options identical (httpOnly, sameSite, path, secure) and avoid duplicates.
+ *    -> setAuthCookies(res, accessToken, refreshToken)
+ *    -> clearAuthCookies(res)
+ *
+ * - Production upgrade:
+ *    We store ONLY a HASH of the latest refreshToken in the User document.
+ *    This allows single active session per user and true invalidation on logout.
+ *    -> user.setRefreshToken(refreshToken)   // saves SHA-256 hash
+ *    -> user.matchesRefreshToken(refreshToken) // compares via hash
+ *    -> user.clearRefreshToken()
+ */
 
-        //set access token in cookie
-        //Set refresh token in HTTP-only Cookie
         setAuthCookies(res,accessToken,refreshToken);
 
         //Return user data & token
@@ -129,7 +147,27 @@ catch(error : any ){
          //Generate Token
          const accessToken = generateAccessToken(ExistingUser.id);
          const refreshToken = generateRefreshToken(ExistingUser.id)
-
+        
+         /**
+ * Auth Controller
+ * ----------------
+ * - We issue two JWTs:
+ *    1) accessToken  → short-lived (15m) for every API call
+ *    2) refreshToken → long-lived (7d) to mint new access tokens
+ *
+ * - Cookies:
+ *    We DO NOT set cookies inline here. Instead we use /src/utils/cookies.ts
+ *    to keep options identical (httpOnly, sameSite, path, secure) and avoid duplicates.
+ *    -> setAuthCookies(res, accessToken, refreshToken)
+ *    -> clearAuthCookies(res)
+ *
+ * - Production upgrade:
+ *    We store ONLY a HASH of the latest refreshToken in the User document.
+ *    This allows single active session per user and true invalidation on logout.
+ *    -> user.setRefreshToken(refreshToken)   // saves SHA-256 hash
+ *    -> user.matchesRefreshToken(refreshToken) // compares via hash
+ *    -> user.clearRefreshToken()
+ */
         setAuthCookies(res,accessToken,refreshToken)
 
          //return user data and token
